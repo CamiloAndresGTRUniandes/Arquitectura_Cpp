@@ -10,8 +10,8 @@ class Monitor():
         # RabbitMQ connection details
         self.rabbitmq_host = '127.0.0.1'
         self.rabbitmq_port = 5672
-        self.rabbitmq_username = 'yonathan'
-        self.rabbitmq_password = 'YonathanBr1983*'
+        self.rabbitmq_username = 'guest'
+        self.rabbitmq_password = 'guest'
 
     def suscriptor_peticion_ventas(self):
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password)))

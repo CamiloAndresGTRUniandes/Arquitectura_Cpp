@@ -4,8 +4,8 @@ class RabbitConnection():
     def __init__(self):
         self.rabbitmq_host = 'localhost'
         self.rabbitmq_port = 5672
-        self.rabbitmq_username = 'yonathan'
-        self.rabbitmq_password = 'YonathanBr1983*'
+        self.rabbitmq_username = 'guest'
+        self.rabbitmq_password = 'guest'
         self.connection = None
         self.callback=None
     def crearConexion(self):

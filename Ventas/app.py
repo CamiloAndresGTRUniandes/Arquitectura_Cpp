@@ -6,7 +6,7 @@ print("Hello")
 i=1
 while i<30:
   try:
-    parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='yonathan', password='YonathanBr1983*'))
+    parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='guest', password='guest'))
     connection = pika.BlockingConnection(
       parameters
     )
