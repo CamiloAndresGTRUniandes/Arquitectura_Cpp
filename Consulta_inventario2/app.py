@@ -5,18 +5,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from faker import Faker
 from faker.generator import random
-from models import db, Producto, LogProducto
+from models import db, Producto,LogProducto
 from views import VistaProducto, VistaSucriptorConsulta,VistaRetornaEstado
 import threading
 from  ListenerServicioConsulta import ListenerServicioConsulta
 from dotenv import load_dotenv
-from datetime import datetime
 import os
-import time
 load_dotenv()
 app = Flask(__name__)
 # app.register_blueprint(bp)
-engine = create_engine('sqlite:///dbapp.db')
+engine = create_engine('sqlite:///products.db')
 Session = sessionmaker(bind=engine)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbapp.sqlite'
@@ -40,16 +38,12 @@ api.add_resource(VistaRetornaEstado, '/respuesta-estado')
 with app.app_context():
     db.session.query(LogProducto).delete()
     db.session.commit()
-
-
 #Daemons
 
 listenerServicioConsulta=  ListenerServicioConsulta()
 threadServicioConsulta = threading.Thread(name=os.getenv("COLA_suscriptor_peticion_ventas"), target=listenerServicioConsulta.listenerConsultaVentas)
 threadServicioConsulta.setDaemon(True)
 threadServicioConsulta.start()
-
-
 if __name__ == '__main__':
     print(os.getenv("COLA_suscriptor_peticion_ventas"))
     app.run(debug=True, port=int(os.getenv("PORT")))

@@ -4,9 +4,9 @@ import os
 #, username="yonathan", password="YonathanBr1983*"
 print("Hello")
 i=1
-while i<15:
+while i<30:
   try:
-    parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='guest', password='guest'))
+    parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='yonathan', password='YonathanBr1983*'))
     connection = pika.BlockingConnection(
       parameters
     )
