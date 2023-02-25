@@ -53,7 +53,7 @@ class VistaRetornaEstado(Resource):
         #print("********Segundos*********");
         #print(segundos)
         #print("********Segundos*********");
-        if(segundos%2==0):
+        if(segundos%2==0 or segundos%3==0 ):
             resp = Response(json.dumps('OK'), mimetype='application/json')
             resp.status_code = 200
             return resp

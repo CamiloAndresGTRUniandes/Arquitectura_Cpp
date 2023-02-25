@@ -22,7 +22,7 @@ class Monitor():
         def callback(ch, method, properties, body):
             # procesa el mensaje recibido aquí
             message = body
-            time.sleep(0.5)
+            time.sleep(0.1)
             print("Mensaje recibido: ", message)
             # Check status of microservices
             service = check_microservices()

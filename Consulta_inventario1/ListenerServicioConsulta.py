@@ -1,8 +1,12 @@
 import pika
 from views.RabbitConnections import RabbitConnection 
-from models import db, Producto, LogProducto
+from models import Producto, LogProducto
 import time
 from datetime import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
 import os
 class ListenerServicioConsulta():
     def __init__(self):
@@ -16,6 +20,12 @@ class ListenerServicioConsulta():
       def callback(ch, method, properties, body):
           # procesa el mensaje recibido aquí
           message = body
+          engine = create_engine('sqlite:///c:/sqllite/dbapp.sqlite')
+          Session = sessionmaker(bind=engine)
+          p=LogProducto( idProducto = int(body), nombreTransacion=os.getenv("COLA_SERVICIO_CONSULTA"), fechaTransaccion=datetime.now()  )
+          session = scoped_session(Session)
+          session.add(p)
+          session.commit()
           #self.insertarLog(int(body))
           #p=LogProducto( idProducto = int(body), nombreTransacion=os.getenv("COLA_SERVICIO_CONSULTA"), fechaTransaccion=datetime.now()  )
           #db.session.add(p)

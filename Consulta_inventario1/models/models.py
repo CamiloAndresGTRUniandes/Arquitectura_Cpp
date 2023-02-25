@@ -16,6 +16,7 @@ class Producto(db.Model):
     precio = db.Column(db.Integer)
 
 class LogProducto(db.Model):
+    __tablename__ = 'log_producto'
     id = db.Column(db.Integer, primary_key=True)
     idProducto = db.Column(db.Integer())
     fechaTransaccion = db.Column(db.DateTime(), default=datetime.now())
