@@ -37,7 +37,7 @@ class ListenerVentas():
     
     def publicaMensajes(self):
         i=1
-        while i<150:
+        while i<5000:
             parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='guest', password='guest'))
             connection = pika.BlockingConnection(
               parameters
