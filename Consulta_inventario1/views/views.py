@@ -50,9 +50,7 @@ class VistaRetornaEstado(Resource):
     if(producirError=='True'):
         t = time.localtime(time.time())
         segundos=  t.tm_sec
-        #print("********Segundos*********");
-        #print(segundos)
-        #print("********Segundos*********");
+
         if (segundos%2==0 or segundos%3==0 ):
             resp = Response(json.dumps('OK'), mimetype='application/json')
             resp.status_code = 200

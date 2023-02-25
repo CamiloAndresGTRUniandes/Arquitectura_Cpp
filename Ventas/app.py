@@ -1,20 +1,46 @@
+from flask import Flask
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 import pika
 import sys
 import os
-#, username="yonathan", password="YonathanBr1983*"
-print("Hello")
-i=1
-while i<150:
-  try:
-    parameters=  pika.ConnectionParameters('127.0.0.1', 5672,'/',pika.PlainCredentials(username='guest', password='guest'))
-    connection = pika.BlockingConnection(
-      parameters
-    )
-    channel = connection.channel()
-    channel.queue_declare(queue='peticion_ventas')
-    channel.basic_publish(exchange='', routing_key='peticion_ventas', body=f'{i}')
-    print(f' [x] Sent Hello World!  {i}'  )
-    connection.close()
-    i=i+1
-  except NameError:
-    print(NameError)
+from models import LogConsultaVenta
+from models import db
+import threading
+from  views.ListenerVentas import ListenerVentas
+
+load_dotenv()
+app = Flask(__name__)
+
+engine = create_engine('sqlite:///c:/sqllite/dbapp.sqlite')
+Session = sessionmaker(bind=engine)
+listenerVenta=  ListenerVentas()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///c:/sqllite/dbapp.sqlite'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'frase-secreta'
+app.config['PROPAGATE_EXCEPTIONS'] = True
+
+app_context = app.app_context()
+app_context.push()
+db.init_app(app)
+db.create_all()
+#############################
+#Borra el log
+with app.app_context():
+    db.session.query(LogConsultaVenta).delete()
+    db.session.commit()
+################################
+# Envia mensajes
+listenerVenta.publicaMensajes()
+###############################
+
+
+threadServicioConsulta = threading.Thread(name=os.getenv("COLA_VENTA"), target=listenerVenta.listenerVentas)
+threadServicioConsulta.setDaemon(True)
+threadServicioConsulta.start()
+
+app = Flask(__name__)
+
+print('Hola Monitor')
+app.run(port=4444)

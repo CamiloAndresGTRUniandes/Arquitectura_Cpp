@@ -45,7 +45,7 @@ class Monitor():
         print('Escuchando en la cola: peticion_ventas')
         channel.start_consuming()
         
-        return 'Suscrito a la cola'
+        return 'Suscrito a la cola peticion_ventas'
     
 
     def suscriptor_respuesta_consulta(self):
@@ -71,4 +71,4 @@ class Monitor():
         print('Escuchando en la cola: respuesta_consulta')
         channel.start_consuming()
 
-        return 'Suscrito a la cola'
+        return 'Suscrito a la cola respuesta consulta'

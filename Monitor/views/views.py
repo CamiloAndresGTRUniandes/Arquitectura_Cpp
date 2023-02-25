@@ -12,7 +12,6 @@ rabbitmq_port = 5672
 rabbitmq_username = 'guest'
 rabbitmq_password = 'guest'
 
-#@bp.route('/process-message', methods=['POST'])
 @bp.route('/suscriptor-peticion-ventas')
 def process_message():
     connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
