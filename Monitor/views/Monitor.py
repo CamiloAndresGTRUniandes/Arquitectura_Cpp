@@ -14,7 +14,7 @@ class Monitor():
         self.rabbitmq_password = 'guest'
 
     def suscriptor_peticion_ventas(self):
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password)))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password),heartbeat=0))
         channel = connection.channel()
 
         channel.queue_declare(queue='peticion_ventas')
@@ -22,14 +22,14 @@ class Monitor():
         def callback(ch, method, properties, body):
             # procesa el mensaje recibido aquí
             message = body
-            time.sleep(0.1)
+            #time.sleep(0.1)
             print("Mensaje recibido: ", message)
             # Check status of microservices
             service = check_microservices()
 
             if service is not None:
                 # Connect to RabbitMQ and send message to appropriate queue
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password)))
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password),heartbeat=0))
                 channel = connection.channel()
                 queue_name = f'{service}-consulta'
                 channel.queue_declare(queue=queue_name)
