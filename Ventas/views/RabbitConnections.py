@@ -34,3 +34,4 @@ class RabbitConnection():
         self.channel.basic_consume(
             queue=cola, on_message_callback=self.callback, auto_ack=False)
         self.channel.start_consuming()
+    

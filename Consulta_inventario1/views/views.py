@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify, Response
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+import time
 import json
-from models import \
+import os
+from models.models import \
     db, \
     Producto, ProductoSchema, \
     LogProducto,LogProductoSchema
@@ -13,27 +15,25 @@ productoSchema = ProductoSchema()
 logProductoSchema=LogProductoSchema()
 # RabbitMQ connection details
 
+#producir error
+
+producirError=os.getenv("PRODUCE_ERROR")
 
 class VistaSucriptorConsulta(Resource):
     def get(self):
+        rabbitCon = RabbitConnection()
         rabbitCon.crearConexion()
-        
-        channel = rabbitCon.creacionCola('service1-consulta')
-
+        channel = rabbitCon.creacionCola(os.getenv("COLA_SERVICIO_CONSULTA"))
         # channel.queue_declare(queue='service1-consulta')
-
         def callback(ch, method, properties, body):
             # procesa el mensaje recibido aquí
-            message = body
-            print("Mensaje recibido por consulta 1: ", message)
+            message = body  
+            print(os.getenv("MENSAJE_RECIBIDO"), message)
             #Ejecutar consulta
 
-
-        channel.basic_consume(queue='service1-consulta', on_message_callback=callback, auto_ack=True)
-
-        print('Escuchando en la cola: service1-consulta')
+        channel.basic_consume(queue=os.getenv("COLA_SERVICIO_CONSULTA"), on_message_callback=callback, auto_ack=True)
+        print(f'Escuchando en la cola: {os.getenv("COLA_SERVICIO_CONSULTA")}')
         channel.start_consuming()
-
         return 'Suscrito a la cola'
 
 
@@ -47,7 +47,19 @@ class VistaLogProducto(Resource):
     
 class VistaRetornaEstado(Resource):
    def get(self):
-    resp = Response(json.dumps('OK'), mimetype='application/json')
-    resp.status_code = 200
-    return resp
+    if(producirError=='True'):
+        t = time.localtime(time.time())
+        segundos=  t.tm_sec
 
+        if (segundos%2==0 or segundos%3==0 ):
+            resp = Response(json.dumps('OK'), mimetype='application/json')
+            resp.status_code = 200
+            return resp
+        else:
+            resp = Response(json.dumps('OK'), mimetype='application/json')
+            resp.status_code = 400
+            return resp
+    else:
+            resp = Response(json.dumps('OK'), mimetype='application/json')
+            resp.status_code = 200
+            return resp

@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 import pika
-import json
-
+import time
 from models.models import check_microservices
 
 bp = Blueprint('api', __name__)
@@ -9,13 +8,13 @@ bp = Blueprint('api', __name__)
 class Monitor():
     def __init__(self):
         # RabbitMQ connection details
-        self.rabbitmq_host = 'localhost'
+        self.rabbitmq_host = '127.0.0.1'
         self.rabbitmq_port = 5672
         self.rabbitmq_username = 'guest'
         self.rabbitmq_password = 'guest'
 
     def suscriptor_peticion_ventas(self):
-        connection = pika.BlockingConnection(pika.ConnectionParameters(self.rabbitmq_host))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password),heartbeat=0))
         channel = connection.channel()
 
         channel.queue_declare(queue='peticion_ventas')
@@ -23,20 +22,21 @@ class Monitor():
         def callback(ch, method, properties, body):
             # procesa el mensaje recibido aquí
             message = body
+            #time.sleep(0.1)
             print("Mensaje recibido: ", message)
             # Check status of microservices
             service = check_microservices()
 
             if service is not None:
                 # Connect to RabbitMQ and send message to appropriate queue
-                connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password)))
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.rabbitmq_host, port=self.rabbitmq_port, credentials=pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password),heartbeat=0))
                 channel = connection.channel()
                 queue_name = f'{service}-consulta'
                 channel.queue_declare(queue=queue_name)
                 channel.basic_publish(exchange='', routing_key=queue_name, body=message)
                 connection.close()
 
-                print(f'Message sent to {service}-consulta')
+                print(f'Message enviado a {service}-consulta')
             else:
                 print('error: No available microservices to process message')
 
@@ -45,7 +45,7 @@ class Monitor():
         print('Escuchando en la cola: peticion_ventas')
         channel.start_consuming()
         
-        return 'Suscrito a la cola'
+        return 'Suscrito a la cola peticion_ventas'
     
 
     def suscriptor_respuesta_consulta(self):
@@ -71,4 +71,4 @@ class Monitor():
         print('Escuchando en la cola: respuesta_consulta')
         channel.start_consuming()
 
-        return 'Suscrito a la cola'
+        return 'Suscrito a la cola respuesta consulta'
