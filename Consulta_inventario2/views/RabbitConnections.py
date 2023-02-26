@@ -10,7 +10,7 @@ class RabbitConnection():
         self.callback=None
     def crearConexion(self):
         parameters = pika.ConnectionParameters(
-            self.rabbitmq_host, self.rabbitmq_port, '/', pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password))
+            self.rabbitmq_host, self.rabbitmq_port, '/', pika.PlainCredentials(username=self.rabbitmq_username, password=self.rabbitmq_password), heartbeat=0)
         self.connection = pika.BlockingConnection(parameters)
         return self.connection
 

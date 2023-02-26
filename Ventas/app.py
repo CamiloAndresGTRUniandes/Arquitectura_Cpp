@@ -30,15 +30,14 @@ db.create_all()
 with app.app_context():
     db.session.query(LogConsultaVenta).delete()
     db.session.commit()
-################################
-# Envia mensajes
-listenerVenta.publicaMensajes()
-###############################
 
 
+threadServicioPublicar =  threading.Thread(name=os.getenv("COLA_RESPUESTA_VENTAS"), target=listenerVenta.publicaMensajes)
 threadServicioConsulta = threading.Thread(name=os.getenv("COLA_VENTA"), target=listenerVenta.listenerVentas)
 threadServicioConsulta.setDaemon(True)
+threadServicioPublicar.setDaemon(True)
 threadServicioConsulta.start()
+threadServicioPublicar.start()
 
 app = Flask(__name__)
 
